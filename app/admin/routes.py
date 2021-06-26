@@ -15,6 +15,7 @@ import os
 
 admin = Blueprint('admin', __name__)
 
+@admin.route('/admin/', methods=['POST', 'GET'])
 @admin.route('/admin/login', methods=['POST', 'GET'])
 def admin_login():
     if current_user.is_authenticated:
