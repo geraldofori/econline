@@ -110,9 +110,8 @@ def election_settings(election_id):
         voters = Voter.qeury.filter_by(election_id=election.id).all()
         html = mass_form.message.data
         subject = mass_form.subject.data
-        map(send_mail(voters.email,subject,html), voters)
-#        for voter in voters:
-#            send_mail(voter.email, subject, html)
+        for voter in voters:
+            send_mail(voter.email, subject, html)
         
         flash('Email Sent', 'success')
         return redirect(url_for('admin.election_settings', election_id=election.id))
@@ -283,7 +282,6 @@ def search_voter_index(election_id, voter_index):
         voterObj['campus'] = voter.campus
         
         voter_array.append(voterObj)
-        print(voter_array)
         return jsonify({'voter': voter_array})
     else:
         return jsonify({'voter': ['No Voter Info']})
@@ -306,7 +304,6 @@ def search_voter_name(election_id, voter_name):
         voterObj['campus'] = voter.campus
         
         voter_array.append(voterObj)
-        print(voter_array)
         return jsonify({'voter': voter_array})
     else:
         return jsonify({'voter': ['No Voter Info']})
