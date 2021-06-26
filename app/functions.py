@@ -9,7 +9,7 @@ from app.models import Election
 from itsdangerous import URLSafeTimedSerializer
 import datetime
 from app.decorators import async_call
-from flask import current_app
+from flask import current_app, url_for
 
 
 
@@ -57,6 +57,13 @@ def send_mail(to, subject, template):
     )
     send_async_email(app, msg)
     
+def mass_links(voter):
+    unique_token = generate_confirmation_token(voter.email)
+    voting_url = url_for('voters.voters_landing', token=unique_token, _external=True)
+    html = "This is a notice for the Business House JCR Executives Election 21. Click on this link to vote: " + voting_url
+    subject = "Vote for your BHJCR Executives"
+    send_mail(voter.email, subject, html)
+
 
 def generate_confirmation_token(email):
     serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])

@@ -4,7 +4,7 @@ from flask_login import login_user, current_user, logout_user, login_required
 from app.extensions import bcrypt, db
 import logging
 from app.models import Admin, Election, Candidate, Voter
-from app.functions import save_picture, send_mail, generate_confirmation_token
+from app.functions import save_picture, send_mail, generate_confirmation_token, mass_links
 from app.forms import LoginForm, NewAdminForm, NewElectionForm, EditElectionNameForm, EditElectionDateForm, AddCandidateForm, ImportVotersForm, EmailForm, MassEmailForm, VoterForm, IndexSearchForm, NameSearchForm,  EmailSearchForm, EditVoterForm
 import datetime
 import csv
@@ -99,8 +99,7 @@ def election_settings(election_id):
         emails = email_form.recipients.data.split(',')
         html = email_form.message.data
         subject = email_form.subject.data
-        for email in emails:
-            send_mail(email, subject, html)
+        map(send_mail(emails, subject, html), emails)
         
         flash('Email Sent', 'success')
         return redirect(url_for('admin.election_settings', election_id=election.id))
@@ -110,8 +109,7 @@ def election_settings(election_id):
         voters = Voter.qeury.filter_by(election_id=election.id).all()
         html = mass_form.message.data
         subject = mass_form.subject.data
-        for voter in voters:
-            send_mail(voter.email, subject, html)
+        map(send_mail(voters.email, subject, html), voters)
         
         flash('Email Sent', 'success')
         return redirect(url_for('admin.election_settings', election_id=election.id))
@@ -459,12 +457,7 @@ def send_links(election_id):
     
     if election.status != "Ended":
         voters = Voter.query.filter_by(election_id=election.id).all()
-        for voter in voters:
-            unique_token = generate_confirmation_token(voter.email)
-            voting_url = url_for('voters.voters_landing', token=unique_token, _external=True)
-            html = "This is a notice for the Business House JCR Executives Election 21. Click on this link to vote: " + voting_url
-            subject = "Vote for your BHJCR Executives"
-            send_mail(voter.email, subject, html)
+        map(mass_links, voters)
             
         flash('The Special links have been sent!', 'info')
         return redirect(url_for('admin.admin_election', election_id=election.id))
