@@ -1,0 +1,338 @@
+{% extends "admin-election.html" %}
+
+{% block content %}
+<main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+        <h1 class="h2">Settings</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group mr-2">
+                <button class="btn btn-sm btn-outline-secondary">{{election.status}}</button>
+                <!--                <button class="btn btn-sm btn-outline-secondary">Export</button>-->
+            </div>
+            <!--
+              <button class="btn btn-sm btn-outline-secondary dropdown-toggle">
+                <span data-feather="calendar"></span>
+                This week
+              </button>
+-->
+        </div>
+    </div>
+
+    <!-- The main sauce for cards -->
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <button class="btn btn-md btn-outline-secondary" id="generalButton"><span data-feather="settings"></span> General</button>
+            </div>
+            <div class="col-md-3">
+                <button class="btn btn-md btn-outline-warning" id="dateButton"><span data-feather="calendar"></span> Dates</button>
+            </div>
+            <div class="col-md-3">
+                <button class="btn btn-md btn-outline-info" id="emailButton"><span data-feather="mail"></span> Email</button>
+            </div>
+            <div class="col-md-3">
+                {% if election.status == "Building" %}
+                <button class="btn btn-md btn-outline-danger" id="deleteButton" data-toggle="modal" data-target="#deleteModal"><span data-feather="trash"></span> Delete Election</button>
+                {% endif %}
+            </div>
+        </div>
+        <hr>
+        <div class="row mt-5">
+            <section id="generalSection">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card border-secondary mb-3" style="max-width: 100%; margin: 0 auto;">
+                            <div class="card-header"><span data-feather="settings"></span> General Settings</div>
+                            <div class="card-body text-primary">
+                                <form method="POST" action="">
+                                    {{edit_name.hidden_tag()}}
+                                    <div class="form-row" style="width: 100%;">
+                                        <div class="form-group col-12">
+                                            <div class="row">
+                                                <div class="form-group col-12">
+                                                    {{ edit_name.name.label(class="form-control-label") }}
+                                                    {% if edit_name.name.errors %}
+                                                    {{ edit_name.name(class="form-control form-control-lg is-invalid flex-fill") }}
+                                                    <div class="invalid-feedback">
+                                                        {% for error in edit_name.name.errors %}
+                                                        <span>{{ error }}</span>
+                                                        {% endfor %}
+                                                    </div>
+                                                    {% else %}
+                                                    {{ edit_name.name(class="form-control form-control-lg flex-fill", placeholder=election.name) }}
+                                                    {% endif %}
+                                                </div>
+                                                {% if election.status == "Building" %}
+                                                &nbsp;{{edit_name.submit_name(class="btn btn-primary")}}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="dateSection">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card border-warning mb-3" style="margin: 0 auto;">
+                            <div class="card-header"><span data-feather="calendar"></span> Date Settings</div>
+                            <div class="card-body text-primary">
+                                <form method="POST" action="">
+                                    {{edit_date.hidden_tag()}}
+                                    <div class="form-row" style="width: 100%;">
+                                        <div class="form-group col-12">
+                                            <div class="row">
+                                                <div class="form-group col-12 col-md-6">
+                                                    {{ edit_date.start_date.label(class="form-control-label") }}
+                                                    {% if edit_date.start_date.errors %}
+                                                    {{ edit_date.start_date(class="form-control form-control-lg is-invalid") }}
+                                                    <div class="invalid-feedback">
+                                                        {% for error in edit_date.start_date.errors %}
+                                                        <span>{{ error }}</span>
+                                                        {% endfor %}
+                                                    </div>
+                                                    {% else %}
+                                                    {{ edit_date.start_date(class="form-control form-control-lg") }}
+                                                    {% endif %}
+                                                </div>
+                                                <div class="form-group col-12 col-md-6">
+                                                    {{ edit_date.end_date.label(class="form-control-label") }}
+                                                    {% if edit_date.end_date.errors %}
+                                                    {{ edit_date.end_date(class="form-control form-control-lg is-invalid") }}
+                                                    <div class="invalid-feedback">
+                                                        {% for error in edit_date.end_date.errors %}
+                                                        <span>{{ error }}</span>
+                                                        {% endfor %}
+                                                    </div>
+                                                    {% else %}
+                                                    {{ edit_date.end_date(class="form-control form-control-lg") }}
+                                                    {% endif %}
+                                                </div>
+                                                <div class="form-group col-12 col-md-6">
+                                                    {{ edit_date.start_time.label(class="form-control-label") }}
+                                                    {% if edit_date.start_time.errors %}
+                                                    {{ edit_date.start_time(class="form-control form-control-lg is-invalid") }}
+                                                    <div class="invalid-feedback">
+                                                        {% for error in edit_date.start_time.errors %}
+                                                        <span>{{ error }}</span>
+                                                        {% endfor %}
+                                                    </div>
+                                                    {% else %}
+                                                    {{ edit_date.start_time(class="form-control form-control-lg") }}
+                                                    {% endif %}
+                                                </div>
+                                                <div class="form-group col-12 col-md-6">
+                                                    {{ edit_date.end_time.label(class="form-control-label") }}
+                                                    {% if edit_date.end_time.errors %}
+                                                    {{ edit_date.end_time(class="form-control form-control-lg is-invalid") }}
+                                                    <div class="invalid-feedback">
+                                                        {% for error in edit_date.end_time.errors %}
+                                                        <span>{{ error }}</span>
+                                                        {% endfor %}
+                                                    </div>
+                                                    {% else %}
+                                                    {{ edit_date.end_time(class="form-control form-control-lg") }}
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% if election.status == "Building" %}
+                                        {{edit_date.submit_date(class="btn btn-primary")}}
+                                        {% endif %}
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="emailSection">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card border-info mb-3" style="margin: 0 auto;">
+                            <div class="card-header"><span data-feather="mail"></span> Send Email</div>
+                            <div class="card-body text-primary">
+                                <form action="" method="POST">
+                                    {{email_form.hidden_tag()}}
+                                    <div class="form-row" style="width: 100%;">
+                                        <div class="form-group col-12">
+                                            <div class="row">
+                                                <div class="form-group col-12">
+                                                    {{ email_form.recipients.label(class="form-control-label") }}
+                                                    {% if email_form.recipients.errors %}
+                                                    {{ email_form.recipients(class="form-control form-control-lg is-invalid") }}
+                                                    <div class="invalid-feedback">
+                                                        {% for error in email_form.recipients.errors %}
+                                                        <span>{{ error }}</span>
+                                                        {% endfor %}
+                                                    </div>
+                                                    {% else %}
+                                                    {{ email_form.recipients(class="form-control form-control-lg") }}
+                                                    {% endif %}
+                                                    <p class="font-weight-bold">You can enter multiple emails separated by commas</p>
+                                                </div>
+                                                <div class="form-group col-12">
+                                                    {{ email_form.subject.label(class="form-control-label") }}
+                                                    {% if email_form.subject.errors %}
+                                                    {{ email_form.subject(class="form-control form-control-lg is-invalid") }}
+                                                    <div class="invalid-feedback">
+                                                        {% for error in email_form.subject.errors %}
+                                                        <span>{{ error }}</span>
+                                                        {% endfor %}
+                                                    </div>
+                                                    {% else %}
+                                                    {{ email_form.subject(class="form-control form-control-lg") }}
+                                                    {% endif %}
+                                                </div>
+                                                <div class="form-group col-12">
+                                                    {{ email_form.message.label(class="form-control-label") }}
+                                                    {% if email_form.message.errors %}
+                                                    {{ email_form.message(rows="10", class="form-control form-control-lg is-invalid") }}
+                                                    <div class="invalid-feedback">
+                                                        {% for error in email_form.message.errors %}
+                                                        <span>{{ error }}</span>
+                                                        {% endfor %}
+                                                    </div>
+                                                    {% else %}
+                                                    {{ email_form.message(rows="10", class="form-control form-control-lg") }}
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {{email_form.send_email(class="btn btn-primary")}}
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Mass Email Section -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card border-info mb-3" style="margin: 0 auto;">
+                            <div class="card-header"><span data-feather="mail"></span> Send Mass Email</div>
+                            <div class="card-body text-primary">
+                                <form action="" method="POST">
+                                    {{mass_form.hidden_tag()}}
+                                    <div class="form-row" style="width: 100%;">
+                                        <div class="form-group col-12">
+                                            <div class="row">
+                                                <div class="form-group col-12">
+                                                    {{ mass_form.subject.label(class="form-control-label") }}
+                                                    {% if mass_form.subject.errors %}
+                                                    {{ mass_form.subject(class="form-control form-control-lg is-invalid") }}
+                                                    <div class="invalid-feedback">
+                                                        {% for error in mass_form.subject.errors %}
+                                                        <span>{{ error }}</span>
+                                                        {% endfor %}
+                                                    </div>
+                                                    {% else %}
+                                                    {{ mass_form.subject(class="form-control form-control-lg") }}
+                                                    {% endif %}
+                                                </div>
+                                                <div class="form-group col-12">
+                                                    <p class="font-weight-bold">This Email form sends an email to every voter!</p>
+                                                    {{ mass_form.message.label(class="form-control-label") }}
+                                                    {% if mass_form.message.errors %}
+                                                    {{ mass_form.message(rows="10", class="form-control form-control-lg is-invalid") }}
+                                                    <div class="invalid-feedback">
+                                                        {% for error in mass_form.message.errors %}
+                                                        <span>{{ error }}</span>
+                                                        {% endfor %}
+                                                    </div>
+                                                    {% else %}
+                                                    {{ mass_form.message(rows="10", class="form-control form-control-lg") }}
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {{mass_form.send_mass(class="btn btn-primary")}}
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</main>
+
+<!--Delete Modal -->
+<div class="modal" tabindex="-1" id="deleteModal" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete Election?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="{{url_for('admin.election_delete', election_id=election.id)}}" method="POST">
+            <button type="submit" class="btn btn-danger">Delete Election</button>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
+
+{% block scripts %}
+
+<script>
+    $(window).on('load', function() {
+        $("#dateSection").hide();
+        $("#emailSection").hide();
+    });
+
+    $("#generalButton").on('click', function() {
+        $("#generalSection").show();
+        $("#dateSection").hide();
+        $("#emailSection").hide();
+    });
+
+    $("#dateButton").on('click', function() {
+        $("#generalSection").hide();
+        $("#dateSection").show();
+        $("#emailSection").hide();
+    });
+
+    $("#emailButton").on('click', function() {
+        $("#generalSection").hide();
+        $("#dateSection").hide();
+        $("#emailSection").show();
+    });
+
+</script>
+
+<script>
+        {% if edit_name.errors %}
+            $(window).on('load', function() {
+               $("#generalSection").show();
+                $("#dateSection").hide();
+                $("#emailSection").hide();
+            }); 
+        {% endif %}
+        
+        {% if edit_date.errors %}
+            $(window).on('load', function() {
+                $("#generalSection").hide();
+                $("#dateSection").show();
+                $("#emailSection").hide();
+            }); 
+        {% endif %}
+
+    </script>
+
+{% endblock scripts %}
