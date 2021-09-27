@@ -1,3 +1,4 @@
+        //THE MODULE (DESIGN) PATTERN//
 var budgetController = (function(){
 
     var Expense = function(id, description, value){
@@ -44,7 +45,7 @@ var budgetController = (function(){
         budget: 0,
         percentage: -1
     };
-
+    //THE SINGLETON (DESIGN) PATTERN//
     return {
         addItem : function(type, des, val){
             var newItem, ID;
@@ -135,7 +136,9 @@ var budgetController = (function(){
 
 })();
 
-var UIController = (function(){
+var UIController =
+        //THE COMMAND (DESIGN) PATTERN//
+(function(){
 
     var DOMstrings ={
         inputType: '.add__type',
